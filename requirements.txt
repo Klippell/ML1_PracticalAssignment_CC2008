@@ -1,0 +1,17 @@
+# Dependencias essenciais do projeto
+numpy>=1.24.0
+pandas>=2.0.0
+
+# O "cheat code" para derivadas automaticas na Regressao Logistica
+autograd>=1.6.2
+
+# Visualizacao de dados
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Scikit-learn (Apenas para metricas e divisao de treino/teste)
+scikit-learn>=1.2.0
+
+# Ferramentas do Jupyter
+notebook>=7.0.0
+ipykernel>=6.0.0
