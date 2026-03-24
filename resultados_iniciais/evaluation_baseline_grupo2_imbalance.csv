@@ -1,0 +1,51 @@
+Dataset,N_Samples,N_Features,Missing_Values,Target_Classes,Execution_Status,Accuracy,Precision_Macro,Recall_Macro,F1_Macro,Training_Time_sec
+dataset_1000_hypothyroid.csv,3772,29,6064,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1002_ipums_la_98-small.csv,7485,55,32427,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1004_synthetic_control.csv,600,60,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1013_analcatdata_challenger.csv,138,2,0,2,Success,0.9285714285714286,0.4642857142857143,0.5,0.48148148148148145,0.001
+dataset_1014_analcatdata_dmft.csv,797,4,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1016_vowel.csv,990,12,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1018_ipums_la_99-small.csv,8844,56,34843,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1020_mfeat-karhunen.csv,2000,64,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1021_page-blocks.csv,5473,10,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1022_mfeat-pixel.csv,2000,240,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1023_soybean.csv,683,35,2337,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1039_hiva_agnostic.csv,4229,1617,0,2,Success,0.0,0.0,0.0,0.0,0.3684
+dataset_1045_kc1-top5.csv,145,94,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_1049_pc4.csv,1458,37,0,2,Success,0.8493150684931506,0.43661971830985913,0.484375,0.45925925925925926,0.0309
+dataset_1050_pc3.csv,1563,37,0,2,Success,0.8626198083067093,0.4470198675496689,0.4804270462633452,0.4631217838765009,0.0055
+dataset_1056_mc1.csv,9466,38,0,2,Success,0.9725448785638859,0.49622844827586204,0.4898936170212766,0.4930406852248394,0.3768
+dataset_1059_ar1.csv,121,29,0,2,Success,0.92,0.46,0.5,0.4791666666666667,0.001
+dataset_1061_ar4.csv,107,29,0,2,Success,0.18181818181818182,0.09090909090909091,0.5,0.15384615384615385,0.001
+dataset_1064_ar6.csv,101,29,0,2,Success,0.14285714285714285,0.07142857142857142,0.5,0.125,0.0
+dataset_1065_kc3.csv,458,39,0,2,Success,0.8913043478260869,0.45054945054945056,0.4939759036144578,0.47126436781609193,0.0172
+dataset_311_oil_spill.csv,937,49,0,2,Success,0.0425531914893617,0.02127659574468085,0.5,0.04081632653061224,0.0021
+dataset_312_scene.csv,2407,299,0,2,Success,0.7717842323651453,0.5508944543828265,0.5334155508574113,0.534863318945854,0.0698
+dataset_316_yeast_ml8.csv,2417,116,0,2,Success,0.9132231404958677,0.5068021041175403,0.5336927223719676,0.5,0.0862
+dataset_38_sick.csv,3772,29,6064,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_450_analcatdata_lawsuit.csv,264,4,0,2,Success,0.07547169811320754,0.03773584905660377,0.5,0.07017543859649122,0.001
+dataset_463_backache.csv,180,31,0,2,Success,0.8611111111111112,0.4305555555555556,0.5,0.4626865671641791,0.001
+dataset_757_meta.csv,528,21,504,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_764_analcatdata_apnea3.csv,450,3,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_765_analcatdata_apnea2.csv,475,3,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_767_analcatdata_apnea1.csv,475,3,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_865_analcatdata_neavote.csv,100,2,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_867_visualizing_livestock.csv,130,2,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_875_analcatdata_chlamydia.csv,100,3,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_940_water-treatment.csv,527,36,542,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_947_arsenic-male-bladder.csv,559,4,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_949_arsenic-female-bladder.csv,559,4,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_950_arsenic-female-lung.csv,559,4,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_951_arsenic-male-lung.csv,559,4,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_954_spectrometer.csv,531,101,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_958_segment.csv,2310,19,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_962_mfeat-morphological.csv,2000,6,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_966_analcatdata_halloffame.csv,1340,16,20,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_968_analcatdata_birthday.csv,365,3,30,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_971_mfeat-fourier.csv,2000,76,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_976_JapaneseVowels.csv,9961,14,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_978_mfeat-factors.csv,2000,216,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_980_optdigits.csv,5620,64,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_984_analcatdata_draft.csv,366,4,1,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_987_collins.csv,500,22,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
+dataset_995_mfeat-zernike.csv,2000,47,0,2,Training/Inference Error: can't multiply sequence by non-int of type 'float',,,,,
