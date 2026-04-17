@@ -122,6 +122,16 @@ class LogisticRegression(BasicRegression):
         loss = self.cost_func(self.y, self.sigmoid(np.dot(self.X, w)))
         return self._add_penalty(loss, w)
 
+    def _cost(self, X, y, theta):
+        """
+        CORREÇÃO AQUI: Substitui o método da classe mãe.
+        Calcula o custo passando a previsão pela sigmoide primeiro (probabilidades)
+        antes de mandar para a binary_crossentropy.
+        """
+        prediction = self.sigmoid(X.dot(theta))
+        error = self.cost_func(y, prediction)
+        return error
+
     @staticmethod
     def sigmoid(x):
         """Função de ativação Sigmoide (transforma qualquer número num valor entre 0 e 1)."""
