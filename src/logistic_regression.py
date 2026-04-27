@@ -11,14 +11,13 @@ def binary_crossentropy(y_true, y_pred):
     Calcula o erro logístico (Log Loss).
     Usamos autograd.numpy (np) para que o autograd consiga calcular a derivada depois.
     """
-    # Adicionamos um 'epsilon' minúsculo para evitar calcular log(0), que daria erro (NaN)
-    epsilon = 1e-15
+    epsilon = 1e-15 # Evitar calcular log(0) = -inf
     y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
     return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
 
 class BasicRegression:
-    def __init__(self, lr=0.001, penalty=None, C=0.01, tolerance=0.0001, max_iters=1000):
+    def __init__(self, lr=0.001, penalty=None, C=0.01, tolerance=0.0001, max_iters=1000, optm="gd"):
         """
         Classe base para otimização usando Gradient Descent.
         """
@@ -27,7 +26,9 @@ class BasicRegression:
         self.C = C                  # Coeficiente de regularização
         self.tolerance = tolerance  # Critério de paragem (se o erro mudar muito pouco, paramos)
         self.max_iters = max_iters  # Número máximo de iterações
-        self.errors = []            # Histórico de erros para plotar gráficos depois
+        self.optm = optm            # Otimizacao a ser usada
+
+        self.errors = []            # Histórico de erros
         self.theta = []             # Os pesos (parâmetros) do nosso modelo
         self.n_samples = None
         self.n_features = None
@@ -80,22 +81,43 @@ class BasicRegression:
         return np.concatenate([b, X], axis=1)
 
     def _train(self):
-        """Inicia o processo de Gradient Descent."""
-        self.theta, self.errors = self._gradient_descent()
+        """Inicia o processo do AdAM."""
+        self.theta, self.errors = self._optimiser()
         logging.info(" Pesos Finais (Theta): %s" % self.theta.flatten())
 
-    def _gradient_descent(self):
-        """O coração do algoritmo: otimização dos pesos."""
+    def _optimiser(self):
+        """Otimiza os parâmetros do modelo com base no algoritmo escolhido GD ou AdAM"""
+
         theta = self.theta
         errors = [self._cost(self.X, self.y, theta)]
-        
-        # A MAGIA ACONTECE AQUI: autograd calcula a derivada da função de loss automaticamente!
+
         cost_d = grad(self._loss)
-        
+
+        # === AdAM ===
+        m = np.zeros_like(theta) # momentum
+        v = np.zeros_like(theta) # RMSProp
+        t = 0 # Correção do bias
+        beta1 = 0.9
+        beta2 = 0.999
+        epsilon = 1e-15 # Evitar divisão por 0
+
         for i in range(1, self.max_iters + 1):
-            # Calcula o gradiente e atualiza os pesos
             delta = cost_d(theta)
-            theta -= self.lr * delta
+
+            if self.optm == "gd": # Gradient Descent, default
+                theta -= self.lr * delta
+            elif self.optm == "adam": # Adaptative Moment Estimation
+                t += 1
+
+                m = beta1 * m + (1 - beta1) * delta
+                v = beta2 * v + (1 - beta2) * (delta ** 2)
+                # Correcao de bias:
+                m_hat = m / (1 - beta1 ** t)
+                v_hat = v / (1 - beta2 ** t)
+
+                theta -= self.lr * m_hat / (np.sqrt(v_hat) + epsilon)
+            else:
+                raise ValueError(f"{self.optimizer} não é suportado")
 
             errors.append(self._cost(self.X, self.y, theta))
             
