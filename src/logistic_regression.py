@@ -4,7 +4,7 @@ import autograd.numpy as np
 from autograd import grad
 
 # Configuração de semente para garantir reprodutibilidade nos testes
-np.random.seed(1000)
+np.random.seed(42)
 
 def binary_crossentropy(y_true, y_pred):
     """
