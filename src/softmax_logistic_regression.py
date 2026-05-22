@@ -29,7 +29,28 @@ def categorical_crossentropy(y_true, y_pred):
     y_pred = np.clip(y_pred, epsilon, 1. - epsilon)
     return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
 
+
 class SoftmaxRegression(BasicRegression):
+    
+    def __init__(self, lr=0.001, penalty=None, C=0.01, tolerance=0.0001, 
+                 max_iters=1000, weighted=False):  # <-- NOVO: parâmetro weighted
+        """
+        Softmax Regression com suporte opcional para Class Weighting.
+        
+        Parâmetros:
+            weighted: bool, default=False
+                Se True, aplica pesos por classe inversamente proporcionais 
+                à frequência (Weighted Softmax). Útil em datasets 
+                desbalanceados. Quando False, comporta-se como Softmax padrão.
+        """
+        # Reutiliza a inicialização da classe-mãe (BasicRegression)
+        super().__init__(lr=lr, penalty=penalty, C=C, 
+                         tolerance=tolerance, max_iters=max_iters)
+        
+        # NOVO: guardar configuração da ponderação
+        self.weighted = weighted
+        self.class_weights = None  # será calculado em fit() se weighted=True
+
     def init_cost(self):
         self.cost_func = categorical_crossentropy
 
@@ -54,30 +75,34 @@ class SoftmaxRegression(BasicRegression):
         # O y usado no treino passa a ser a matriz de probabilidades reais (One-Hot)
         self.y_train_encoded = np.eye(self.n_classes)[y_indices]
         
-        # 3. Inicialização de pesos para MULTI-CLASSE
+        # 3. NOVO: Cálculo dos pesos por classe (só se weighted=True)
+        # Fórmula: w_c = N / (K * n_c)  →  classes raras recebem peso maior
+        if self.weighted:
+            N = len(y_indices)
+            K = self.n_classes
+            class_counts = np.bincount(y_indices, minlength=K)
+            # Adicionamos epsilon para evitar divisão por zero
+            self.class_weights = N / (K * (class_counts + 1e-12))
+            logging.info(f"Pesos das classes calculados (Inverse Frequency): {self.class_weights}")
+        else:
+            # Pesos todos iguais a 1 → matematicamente equivalente à Cross-Entropy padrão
+            self.class_weights = np.ones(self.n_classes)
+        
+        # 4. Inicialização de pesos para MULTI-CLASSE
         self.n_samples, self.n_features = self.X.shape
         # O tamanho do theta deve ser (Features + 1) * Classes
         size = (self.n_features + 1) * self.n_classes
         self.theta = np.random.normal(size=size, scale=0.01)
         
-        # 4. Adiciona bias e inicia o Gradient Descent
+        # 5. Adiciona bias e inicia o Gradient Descent
         self.X = self._add_intercept(self.X)
         self.init_cost()
         self._train()
     
-    def _cost(self, theta, X, y):
+    def _cost(self, X, y, theta):
         """
-        Calcula o custo da regressão softmax utilizando cross-entropy.
-    
-        Sobrescreve o método _cost para corrigir erro de shapes:
-        - Realiza o reshape de theta (vetor achatado) para matriz w_matrix de shape
-          (X.shape[1], n_classes), onde n_classes = theta.size // X.shape[1].
-        - Calcula logits = X.dot(w_matrix).
-        - Aplica softmax nos logits para obter probabilidades (com estabilidade numérica).
-        - Computa o custo: -(1/m) * Σ_i Σ_k y_{i,k} * log(p_{i,k}).
-    
-        Similar ao _cost da LogisticRegression, que faz reshape de theta para
-        (X.shape[1], 1) antes de sigmoid(X.dot(theta)).
+        Assinatura bate com a classe mãe (X, y, theta).
+        Usa self.y_train_encoded (one-hot) e self.class_weights (NOVO).
         """
         n_features = X.shape[1]
         n_classes = theta.size // n_features
@@ -87,13 +112,20 @@ class SoftmaxRegression(BasicRegression):
         logits_shifted = logits - np.max(logits, axis=1, keepdims=True)
         exp_logits = np.exp(logits_shifted)
         probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
-        # Cross-entropy loss
-        cost = -np.mean(np.sum(y * np.log(probs + 1e-12), axis=1))
+        # Cross-entropy PONDERADA usando self.class_weights
+        # (quando weighted=False, todos os pesos = 1 → cross-entropy padrão)
+        cost = -np.mean(np.sum(self.class_weights * self.y_train_encoded * np.log(probs + 1e-12), axis=1))
         return cost
 
     def _loss(self, w):
         """
-        Função de perda adaptada para derivar a matriz de pesos.
+        Função de perda PONDERADA: aplica self.class_weights na cross-entropy.
+        
+        Loss padrão (weighted=False, todos os pesos = 1):
+            L = -(1/N) Σ_i Σ_c y_ic * log(p_ic)
+        
+        Loss ponderada (weighted=True, pesos = N/(K*n_c)):
+            L = -(1/N) Σ_i Σ_c w_c * y_ic * log(p_ic)
         """
         # Transforma o vetor de parâmetros 'w' de volta numa matriz (Features x Classes)
         w_matrix = w.reshape(self.n_features + 1, self.n_classes)
@@ -102,8 +134,12 @@ class SoftmaxRegression(BasicRegression):
         z = np.dot(self.X, w_matrix)
         y_pred = softmax(z)
         
-        # Calcula o erro categórico comparando com o y_train_encoded
-        loss = self.cost_func(self.y_train_encoded, y_pred)
+        # NOVO: aplica os pesos por classe na cross-entropy
+        # Quando weighted=False, self.class_weights = [1, 1, ..., 1] → não tem efeito
+        epsilon = 1e-15
+        y_pred_clipped = np.clip(y_pred, epsilon, 1. - epsilon)
+        loss = -np.mean(np.sum(self.class_weights * self.y_train_encoded * np.log(y_pred_clipped), axis=1))
+        
         return self._add_penalty(loss, w)
 
     def predict_proba(self, X):
@@ -119,18 +155,22 @@ class SoftmaxRegression(BasicRegression):
         # Seleciona o índice com maior valor (axis=1 agora garantido pela matriz)
         indices = np.argmax(probs, axis=1)
         return self.classes_unique[indices]
+
+
 # --- Exemplo de Uso ---
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     
     # Dataset sintético: 3 classes, 2 features
     X_train = np.array([[0.5, 0.2], [1.0, 1.5], [2.5, 0.5], [0.1, 0.1], [1.2, 1.2], [2.2, 0.8]])
-    y_train = np.array([0, 1, 2, 0, 1, 2]) # Classes 0, 1 e 2
+    y_train = np.array([0, 1, 2, 0, 1, 2])
 
-    model = SoftmaxRegression(lr=0.1, max_iters=500)
-    model.fit(X_train, y_train)
-
-    # Teste de previsão
-    test_point = [[2.0, 0.6]]
-    print(f"Probabilidades: {model.predict_proba(test_point)}")
-    print(f"Classe prevista: {model.predict(test_point)}")
+    # Modo baseline (sem ponderação)
+    model_normal = SoftmaxRegression(lr=0.1, max_iters=500, weighted=False)
+    model_normal.fit(X_train, y_train)
+    print(f"[Baseline] Previsão para [2.0, 0.6]: {model_normal.predict([[2.0, 0.6]])}")
+    
+    # Modo proposta (com ponderação)
+    model_weighted = SoftmaxRegression(lr=0.1, max_iters=500, weighted=True)
+    model_weighted.fit(X_train, y_train)
+    print(f"[Weighted] Previsão para [2.0, 0.6]: {model_weighted.predict([[2.0, 0.6]])}")
