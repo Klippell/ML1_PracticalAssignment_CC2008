@@ -1,48 +1,94 @@
-# Projeto de Aprendizagem Computacional I (CC2008) - 2025/2026
+# Machine Learning I (CC2008) — Projeto Prático 2025/2026
 
-Repositório destinado ao desenvolvimento do trabalho prático da unidade curricular de Machine Learning I na Universidade do Porto.
+**Avaliação e Adaptação de Algoritmos de Classificação**
 
-## Objetivos do Projeto
+Universidade do Porto — Faculdade de Ciências
+Unidade Curricular: Machine Learning I (CC2008)
+Turma: **PL3** | Grupo: **PL3_G1**
+Docente: Rita Paula Almeida Ribeiro
 
-* Compreender o funcionamento teórico e empírico de um algoritmo de ML.
-* Implementar um algoritmo de classificação "do zero" (sem bibliotecas como scikit-learn).
-* Modificar o algoritmo para lidar com desafios específicos do mundo real e avaliar sua performance.
+## Equipa
 
-## O Desafio
+| Número | Nome |
+|--------|------|
+| 202300276 | Guilherme Klippel |
+| 202304280 | Daniel Tiago |
+| 202512256 | Lucas Coelho |
 
-O grupo deve escolher um dos seguintes cenários para otimizar o algoritmo:
+## Resumo do Projeto
 
-1. **Grupo 1:** Ruído ou outliers.
-2. **Grupo 2:** Desequilíbrio de classes (Class Imbalance) em classificação binária.
-3. **Grupo 3:** Classificação multiclasse.
+Este projeto investiga o desempenho da **Regressão Logística** em problemas de classificação **multiclasse** (Grupo de Datasets 3) e propõe duas adaptações sucessivas, avaliadas empiricamente sobre 45 datasets de benchmark.
 
-## Fases de Desenvolvimento
+A análise organiza-se em duas fases:
 
-### Fase 1
+- **Fase 1 — Baseline.** Implementação da Logistic Regression de raiz (com `autograd` para diferenciação automática), construção de uma pipeline completa de pré-processamento (imputação, one-hot encoding, normalização Z-score) e avaliação via K-Fold Cross-Validation (k=5). A análise confirma a fragilidade estrutural da Logistic binária em contextos multiclasse (F1 macro médio ≈ 0.14).
 
-* Seleção do algoritmo de classificação e busca de uma implementação base.
-* Análise teórica de como o algoritmo é afetado pela característica de dados escolhida.
+- **Fase 2 — Proposta.** Extensão para **Softmax Regression** multiclasse, seguida de uma proposta original: **Weighted Softmax**, que aplica pesos por classe inversamente proporcionais à frequência (`w_c = N / (K · n_c)`) na cross-entropy. A comparação é validada estatisticamente com o teste de **Wilcoxon Signed-Rank** (Demšar, 2006), reconhecido como o protocolo adequado para comparar classificadores em múltiplos datasets.
 
-### Fase 2
+## Principais Resultados
 
-* Avaliação empírica da versão padrão nos datasets de benchmark.
-* Proposta e implementação de uma variante robusta do algoritmo.
-* Comparação de resultados entre a versão original e a versão modificada.
+| Comparação | Métrica primária | Resultado | Significância |
+|-----------|------------------|-----------|---------------|
+| Logistic vs Softmax | F1 macro | Softmax vence (Δ = +0.479) | p ≈ 1.4 × 10⁻⁸ ✓ |
+| Softmax vs Weighted Softmax (agregado) | F1 macro | Empate (Δ = −0.005) | p ≈ 0.10 ✗ |
+| Softmax vs Weighted Softmax (Page-Blocks) | Recall macro | Weighted vence (Δ = +0.36) | Caso de estudo |
 
-## Datas e Prazos
+O Weighted Softmax produziu o trade-off teórico esperado (Recall ↑, Precision ↓) sem ganho líquido em F1 no agregado, mas demonstrou utilidade clara num estudo de caso com desbalanceamento severo (Page-Blocks).
 
-* **Checkpoint (Obrigatório):** Semana de 20 a 24 de abril de 2026.
-* **Entrega Final:** 22 de maio de 2026, às 23:59.
+## Estrutura do Repositório
 
-## Critérios de Avaliação (Resumo)
+```
+Projeto/
+├── final.ipynb                  Notebook principal (pipeline completa + análise)
+├── slides.pdf                   Slides para apresentação (12 min)
+├── requirements.txt             Dependências Python
+├── README.md                    Este ficheiro
+│
+├── src/                         Implementação dos modelos
+│   ├── logistic_regression.py   Logistic binária — Sigmoide + BCE
+│   └── softmax_logistic_regression.py
+│                                Softmax multiclasse + flag weighted=True
+│
+├── datasets/                    Benchmarks por tipo de desafio
+│   ├── multiclass_classification/   45 datasets (foco do trabalho)
+│   ├── class_imbalance/             50 datasets
+│   └── noise_outliers/              50 datasets
+│
+├── resultados_iniciais/         Métricas brutas por dataset (Fase 1)
+└── resultados_processados/      Resultados agregados para análise estatística
+    ├── logistic/
+    ├── softmax/
+    └── weighted_softmax/
+```
 
-* **Proposta de modificação (Originalidade e Teoria):** 30%.
-* **Apresentação e Discussão:** 25%.
-* **Checkpoint (Obrigatório):** 20%.
-* **Estudo Empírico:** 10%.
-* **Compreensão do Algoritmo:** 10%.
-* **Qualidade do Notebook Python:** 5%.
+## Como Executar
 
-## Grupo
+**1. Instalar dependências**
 
-* Trabalho realizado em grupos de 3 alunos da mesma turma prática (PL).
+```bash
+pip install -r requirements.txt
+```
+
+**2. Abrir e executar o notebook**
+
+```bash
+jupyter notebook final.ipynb
+```
+
+Executa todas as células de cima para baixo. O notebook está organizado em 8 secções numeradas que correspondem ao fluxo da apresentação (pré-processamento → baseline → Softmax → testes estatísticos → Weighted Softmax → estudo de caso → conclusão).
+
+**Nota:** os ficheiros das pastas `resultados_iniciais/` e `resultados_processados/` já incluem os resultados gerados pelas nossas execuções. Reexecutar o notebook irá sobrescrevê-los com novas execuções (resultados consistentes graças à seed fixa em `np.random.seed(42)`).
+
+## Tecnologias Utilizadas
+
+- **Python 3.12+**
+- **autograd** — diferenciação automática para o gradient descent
+- **NumPy / Pandas** — manipulação de dados
+- **Matplotlib / Seaborn** — visualizações
+- **scikit-learn** — apenas para métricas (`accuracy`, `precision/recall/f1 macro`) e divisão treino/teste, em conformidade com o enunciado
+- **SciPy** — teste de Wilcoxon Signed-Rank
+
+## Referências
+
+- Implementação base inspirada em [rushter/MLAlgorithms](https://github.com/rushter/MLAlgorithms) (referência indicada no enunciado), com modificações substanciais.
+- Demšar, J. (2006). *Statistical Comparisons of Classifiers over Multiple Data Sets.* Journal of Machine Learning Research, 7, 1–30. — protocolo do teste estatístico utilizado.
