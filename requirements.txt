@@ -1,17 +1,28 @@
-# Dependencias essenciais do projeto
+# =========================================================
+# Machine Learning I (CC2008) — Projeto PL3_G1
+# Dependências necessárias para executar final.ipynb
+# =========================================================
+ 
+# --- Manipulação de dados ---
 numpy>=1.24.0
 pandas>=2.0.0
-
-# O "cheat code" para derivadas automaticas na Regressao Logistica
+ 
+# --- Diferenciação automática (gradient descent nos modelos) ---
 autograd>=1.6.2
-
-# Visualizacao de dados
+ 
+# --- Visualização ---
 matplotlib>=3.7.0
 seaborn>=0.12.0
-
-# Scikit-learn (Apenas para metricas e divisao de treino/teste)
+ 
+# --- Métricas, K-Fold e train/test split ---
+# (Nota: scikit-learn é usado APENAS para métricas e divisão dos dados,
+#  em conformidade com o enunciado — os modelos foram implementados de raiz)
 scikit-learn>=1.2.0
-
-# Ferramentas do Jupyter
+ 
+# --- Teste estatístico Wilcoxon Signed-Rank ---
+scipy>=1.10.0
+ 
+# --- Ambiente Jupyter ---
 notebook>=7.0.0
 ipykernel>=6.0.0
+ 
